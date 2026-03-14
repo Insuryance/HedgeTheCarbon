@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarbonIQ — AI-Native Carbon Quant Engine</title>
+    <meta name="description" content="AI-native quant engine for voluntary carbon market intelligence, risk-adjusted pricing, and arbitrage detection.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">◈</div>
+            <span class="brand-text">Carbon<span class="brand-accent">IQ</span></span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active" data-section="dashboard" onclick="navigateTo('dashboard')">
+                <span class="nav-icon">◫</span> Dashboard
+            </li>
+            <li class="nav-item" data-section="projects" onclick="navigateTo('projects')">
+                <span class="nav-icon">▤</span> Projects
+            </li>
+            <li class="nav-item" data-section="risk" onclick="navigateTo('risk')">
+                <span class="nav-icon">⚠</span> Risk Explorer
+            </li>
+            <li class="nav-item" data-section="quant" onclick="navigateTo('quant')">
+                <span class="nav-icon">◎</span> Quant Engine
+            </li>
+            <li class="nav-item" data-section="arbitrage" onclick="navigateTo('arbitrage')">
+                <span class="nav-icon">⇄</span> Arbitrage
+            </li>
+            <li class="nav-item" data-section="crawler" onclick="navigateTo('crawler')">
+                <span class="nav-icon">⟳</span> Registry Crawler
+            </li>
+            <li class="nav-item" data-section="cdc" onclick="navigateTo('cdc')">
+                <span class="nav-icon">◉</span> CDC Log
+            </li>
+            <li class="nav-item" data-section="docs" onclick="navigateTo('docs')">
+                <span class="nav-icon">🔍</span> Doc Search
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="api-badge" onclick="window.open('/docs','_blank')">API Docs ↗</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Dashboard Section -->
+        <section id="section-dashboard" class="content-section active">
+            <div class="section-header">
+                <h1>Dashboard</h1>
+                <p class="subtitle">Voluntary Carbon Market Intelligence</p>
+            </div>
+            <div id="dashboard-stats" class="stats-grid"></div>
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3>Registry Distribution</h3>
+                    <canvas id="chart-registry"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Risk Distribution</h3>
+                    <canvas id="chart-risk"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Project Types</h3>
+                    <canvas id="chart-types"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="section-projects" class="content-section">
+            <div class="section-header">
+                <h1>Carbon Projects</h1>
+                <div class="filter-bar">
+                    <select id="filter-registry" onchange="loadProjects()">
+                        <option value="">All Registries</option>
+                        <option value="Verra">Verra</option>
+                        <option value="Gold Standard">Gold Standard</option>
+                        <option value="ACR">ACR</option>
+                        <option value="CAR">CAR</option>
+                    </select>
+                    <select id="filter-type" onchange="loadProjects()">
+                        <option value="">All Types</option>
+                        <option value="REDD+">REDD+</option>
+                        <option value="ARR">ARR</option>
+                        <option value="Cookstoves">Cookstoves</option>
+                        <option value="Wind">Wind</option>
+                        <option value="Solar">Solar</option>
+                        <option value="Mangrove Restoration">Mangrove</option>
+                        <option value="Biochar">Biochar</option>
+                    </select>
+                </div>
+            </div>
+            <div id="projects-table" class="data-table-wrapper"></div>
+        </section>
+
+        <!-- Project Detail Modal -->
+        <div id="project-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-project-name"></h2>
+                    <button class="modal-close" onclick="closeModal()">✕</button>
+                </div>
+                <div id="modal-body"></div>
+            </div>
+        </div>
+
+        <!-- Risk Explorer Section -->
+        <section id="section-risk" class="content-section">
+            <div class="section-header">
+                <h1>Risk Explorer</h1>
+                <p class="subtitle">Geospatial + Political + Audit Risk Analysis</p>
+            </div>
+            <div id="risk-overview" class="stats-grid"></div>
+            <div class="charts-row">
+                <div class="chart-card wide">
+                    <h3>Composite Risk Histogram</h3>
+                    <canvas id="chart-risk-histogram"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Risk Factors Breakdown</h3>
+                    <canvas id="chart-risk-factors"></canvas>
+                </div>
+            </div>
+            <div id="risk-projects-table" class="data-table-wrapper"></div>
+        </section>
+
+        <!-- Quant Engine Section -->
+        <section id="section-quant" class="content-section">
+            <div class="section-header">
+                <h1>Quant Engine</h1>
+                <p class="subtitle">Fair-Value Pricing & Portfolio Valuation</p>
+            </div>
+            <div id="portfolio-summary" class="stats-grid"></div>
+            <div id="quant-positions" class="data-table-wrapper"></div>
+        </section>
+
+        <!-- Arbitrage Section -->
+        <section id="section-arbitrage" class="content-section">
+            <div class="section-header">
+                <h1>Arbitrage Opportunities</h1>
+                <p class="subtitle">Undervalued Credits: Fair Value >> Market Price</p>
+            </div>
+            <div id="arbitrage-table" class="data-table-wrapper"></div>
+        </section>
+
+        <!-- Crawler Section -->
+        <section id="section-crawler" class="content-section">
+            <div class="section-header">
+                <h1>Registry Crawler</h1>
+                <div class="action-bar">
+                    <button id="btn-crawl" class="btn-primary" onclick="triggerCrawl()">
+                        <span class="btn-icon">⟳</span> Run Registry Crawl
+                    </button>
+                </div>
+            </div>
+            <div id="crawl-result" class="alert-box" style="display:none;"></div>
+            <div id="crawl-history" class="data-table-wrapper"></div>
+        </section>
+
+        <!-- CDC Log Section -->
+        <section id="section-cdc" class="content-section">
+            <div class="section-header">
+                <h1>Change Data Capture</h1>
+                <p class="subtitle">Entity Modification History & Risk Drift Tracking</p>
+            </div>
+            <div id="cdc-table" class="data-table-wrapper"></div>
+        </section>
+
+        <!-- Doc Search Section -->
+        <section id="section-docs" class="content-section">
+            <div class="section-header">
+                <h1>Document Search</h1>
+                <p class="subtitle">Semantic search across PDD & methodology documents</p>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="doc-search-input" placeholder="Search project documents... (e.g. 'REDD+ additionality Amazon')" onkeydown="if(event.key==='Enter')searchDocs()">
+                <button class="btn-primary" onclick="searchDocs()">Search</button>
+                <button class="btn-secondary" onclick="indexDocs()">Index All Docs</button>
+            </div>
+            <div id="doc-results" class="doc-results-grid"></div>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
